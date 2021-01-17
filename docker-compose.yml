@@ -1,0 +1,26 @@
+version: '3'
+services:
+  postgresql:
+    image: postgres:latest
+    container_name: nc_postgres
+    restart: always
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data/db-files/
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=NC
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - TZ=Asia/Seoul
+      - PGDATA=/var/lib/postgresql/data/db-files/
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pg_admin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ""
+      PGADMIN_DEFAULT_PASSWORD: ""
+    ports:
+      - '5555:80'
+    volumes:
+      - ./pgadmin/data:/var/lib/pgadmin
