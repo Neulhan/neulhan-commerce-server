@@ -1,2 +1,2 @@
 # Neulhan Commerce Server with Go
-docker lambda postgresql golang gorm iris auth0 
+docker lambda postgresql golang gorm gin 
