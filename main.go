@@ -1,22 +1,11 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"log"
+	"neulhan-commerce-server/src/rest"
 )
 
 func main() {
-	r := gin.Default()
-
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-
-	err := r.Run()
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Println("START SERVER")
+	log.Fatal(rest.RunAPI(":8000"))
 }

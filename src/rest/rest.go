@@ -1,35 +1,37 @@
 package rest
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
-func RunAPI(address string) {
+func RunAPI(address string) error {
+	h, err := NewHandler()
+	if err != nil {
+		return err
+	}
+	return RunAPIWithHandler(address, h)
+}
+
+func RunAPIWithHandler(address string, h HandlerInterface) error {
 	r := gin.Default()
 
-	r.GET("/products", func(c *gin.Context) {
+	h, _ = NewHandler()
 
-	})
+	r.GET("/products", h.GetProducts)
+	r.GET("/promos", h.GetPromos)
 
-	r.GET("/promos", func(c *gin.Context) {
+	r.Group("/users")
+	{
+		r.POST("/users/signin", h.SignIn)
+		r.POST("/users", h.AddUser)
+		r.POST("/users/charge", h.Charge)
+	}
 
-	})
+	r.Group("/user")
+	{
+		r.GET("/user/:id/orders", h.GetOrders)
+		r.POST("/user/:id/signout", h.SignOut)
+	}
 
-	r.POST("/users/signin", func(context *gin.Context) {
-
-	})
-
-	r.POST("/users", func(context *gin.Context) {
-
-	})
-
-	r.POST("/user/:id/signout", func(context *gin.Context) {
-
-	})
-
-	r.GET("/user/:id/orders", func(context *gin.Context) {
-
-	})
-
-	r.POST("/users/charge", func(context *gin.Context) {
-
-	})
+	return r.Run(address)
 }
