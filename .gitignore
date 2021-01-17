@@ -33,6 +33,9 @@
 Icon
 
 
+postgresql/
+pgadmin/
+
 # Thumbnails
 ._*
 
