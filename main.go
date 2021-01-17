@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"github.com/kataras/iris/v12"
+	"log"
+)
 
 func main() {
-	fmt.Println("Neulhan Commerce")
+	app := iris.New()
+	err := app.Listen(":8000")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
