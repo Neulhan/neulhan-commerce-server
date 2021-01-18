@@ -8,19 +8,20 @@ services:
       - ./postgresql/data:/var/lib/postgresql/data/db-files/
     ports:
       - 5432:5432
-    environment:
-      - POSTGRES_DB=NC
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=root
-      - TZ=Asia/Seoul
-      - PGDATA=/var/lib/postgresql/data/db-files/
+    env_file: .env
   pgadmin:
     image: dpage/pgadmin4
     container_name: pg_admin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ""
-      PGADMIN_DEFAULT_PASSWORD: ""
+    env_file: .env
     ports:
       - '5555:80'
     volumes:
       - ./pgadmin/data:/var/lib/pgadmin
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
