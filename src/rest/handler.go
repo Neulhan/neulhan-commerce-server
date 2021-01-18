@@ -2,6 +2,7 @@ package rest
 
 import (
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"neulhan-commerce-server/src/dblayer"
 	"neulhan-commerce-server/src/models"
@@ -22,8 +23,14 @@ type Handler struct {
 	db dblayer.DBLayer
 }
 
-func NewHandler() (*Handler, error) {
-	return new(Handler), nil
+func NewHandler(dbName string, conf *gorm.Config) (*Handler, error) {
+	db, err := dblayer.NewORM(dbName, conf)
+	if err != nil {
+		return nil, err
+	}
+	return &Handler{
+		db: db,
+	}, nil
 }
 
 func (h *Handler) GetProducts(c *gin.Context) {
@@ -31,7 +38,7 @@ func (h *Handler) GetProducts(c *gin.Context) {
 		return
 	}
 
-	products, err := h.db.GetAllProduct()
+	products, err := h.db.GetAllProducts()
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -67,7 +74,7 @@ func (h *Handler) SignIn(c *gin.Context) {
 		return
 	}
 
-	customer, err = h.db.SignInUser(customer)
+	customer, err = h.db.SignInUser(customer.Email, customer.Pass)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
