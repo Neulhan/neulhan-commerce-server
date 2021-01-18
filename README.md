@@ -5,13 +5,13 @@ docker lambda postgresql golang viper gorm gin
 - set Logging Middleware
 - set Go Server to run in Docker Container
 
-# Project 실행 
+## Run Project
 ```
 docker-compose up -d
 go run main.go
 ```
 
-# Postgresql 접속
+## Connect To Postgresql 
 ```
 docker exec -it nc_postgres /bin/bash
 ...
