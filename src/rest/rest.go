@@ -2,10 +2,12 @@ package rest
 
 import (
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"neulhan-commerce-server/src/config"
 )
 
 func RunAPI(address string) error {
-	h, err := NewHandler()
+	h, err := NewHandler(config.DSN, &gorm.Config{})
 	if err != nil {
 		return err
 	}
@@ -14,8 +16,6 @@ func RunAPI(address string) error {
 
 func RunAPIWithHandler(address string, h HandlerInterface) error {
 	r := gin.Default()
-
-	h, _ = NewHandler()
 
 	r.GET("/products", h.GetProducts)
 	r.GET("/promos", h.GetPromos)
