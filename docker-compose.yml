@@ -1,8 +1,35 @@
 version: '3'
 services:
+  goserverprd:
+    build:
+      context: .
+      dockerfile: prd.Dockerfile
+    container_name: go_server_prd
+    depends_on:
+      - postgresql
+    links:
+      - "postgresql:postgresql-server"
+    env_file: .env
+    ports:
+      - '8008:80'
+  goserverdev:
+    build:
+      context: ./
+      dockerfile: dev.Dockerfile
+    container_name: go_server_dev
+    env_file: .env
+    depends_on:
+      - postgresql
+    links:
+      - "postgresql:postgresql-server"
+    ports:
+      - '8009:80'
+    volumes:
+      - ./:/app
   postgresql:
     image: postgres:latest
     container_name: nc_postgres
+    hostname: 'nc_postgresql'
     restart: always
     volumes:
       - ./postgresql/data:/var/lib/postgresql/data/db-files/
@@ -27,3 +54,5 @@ networks:
 volumes:
   postgres:
   pgadmin:
+  goserverprd:
+  goserverdev:
