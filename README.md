@@ -1,14 +1,14 @@
 # Neulhan Commerce Server with Go
 docker-compose lambda postgresql golang gorm gin
 
-- set HotReload feature
+- ~~set HotReload feature~~
 - set Logging Middleware
-- set Go Server to run in Docker Container
+- ~~set Go Server to run in Docker Container~~
 
 ## Run Project
 ```
-docker-compose up -d
-go run main.go
+docker-compose build
+docker-compose up
 ```
 
 ## Connect To Postgresql 
