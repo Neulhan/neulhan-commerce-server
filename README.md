@@ -11,6 +11,16 @@ docker-compose build
 docker-compose up
 ```
 
+## Import, UnImport packages
+```bash
+go mod tidy
+```
+
+## Verify packages
+```bash
+go mod verify
+```
+
 ## Connect To Postgresql 
 ```
 docker exec -it nc_postgres /bin/bash
