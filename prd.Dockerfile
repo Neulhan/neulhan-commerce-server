@@ -8,9 +8,7 @@ ENV GO111MODULE=on \
 
 WORKDIR /build
 
-RUN echo $PWD
-
-COPY ../go.mod ../go.sum ../main.go ./
+COPY go.mod go.sum main.go ./
 
 COPY src ./src
 
