@@ -1,5 +1,5 @@
 # Neulhan Commerce Server with Go
-docker lambda postgresql golang viper gorm gin
+docker-compose lambda postgresql golang gorm gin
 
 - set HotReload feature
 - set Logging Middleware
