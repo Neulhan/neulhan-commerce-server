@@ -2,6 +2,7 @@ package dblayer
 
 import (
 	"errors"
+	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -13,13 +14,19 @@ type DBORM struct {
 }
 
 func NewORM(dbName string, con *gorm.Config) (*DBORM, error) {
-	db, err := gorm.Open(postgres.Open(dbName), con)
-	if err != nil {
-		log.Fatal("DATABASE OPEN FAILED")
-	}
-	err = db.AutoMigrate(&models.Customer{}, &models.Product{}, &models.Order{})
-	if err != nil {
-		log.Fatal("DATABASE MIGRATE FAILED")
+	var err error
+	var db *gorm.DB
+	for {
+		db, err = gorm.Open(postgres.Open(dbName), con)
+		if err != nil {
+			fmt.Println("FAILED -> RECONNECT TO DATABASE")
+			continue
+		}
+		err = db.AutoMigrate(&models.Customer{}, &models.Product{}, &models.Order{})
+		if err != nil {
+			log.Fatal("DATABASE MIGRATE FAILED")
+		}
+		break
 	}
 	return &DBORM{
 		DB: db,
