@@ -7,6 +7,8 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"neulhan-commerce-server/src/models"
+	"os"
+	"time"
 )
 
 type DBORM struct {
@@ -19,7 +21,10 @@ func NewORM(dbName string, con *gorm.Config) (*DBORM, error) {
 	for {
 		db, err = gorm.Open(postgres.Open(dbName), con)
 		if err != nil {
-			fmt.Println("FAILED -> RECONNECT TO DATABASE")
+			fmt.Println(dbName)
+			fmt.Printf("FAILED -> RECONNECT TO DATABASE[%s]", os.Getenv("GIN_MODE"))
+
+			time.Sleep(time.Second * 3)
 			continue
 		}
 		err = db.AutoMigrate(&models.Customer{}, &models.Product{}, &models.Order{})
@@ -28,6 +33,8 @@ func NewORM(dbName string, con *gorm.Config) (*DBORM, error) {
 		}
 		break
 	}
+
+	fmt.Println("DATABASE CONNECTED!")
 	return &DBORM{
 		DB: db,
 	}, err
