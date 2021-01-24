@@ -1,17 +1,24 @@
 # Neulhan Commerce Server with Go
-docker-compose lambda postgresql golang gorm gin
+![](static/ONAIR.png)
+elastic-beanstalk docker postgresql golang gorm gin
 
-- ~~set HotReload feature~~
+- set Blue-Green deploy
 - set Logging Middleware
-- ~~set Go Server to run in Docker Container~~
+- set SSL https connection
 
-## Run Project
-```
-docker-compose build
-docker-compose up
+## Run Project Development
+```bash
+source alias.sh
+up
+down
 ```
 
-## Import, UnImport packages
+## Deploy Project
+```bash
+eb deploy
+```
+
+## Tidy packages
 ```bash
 go mod tidy
 ```
