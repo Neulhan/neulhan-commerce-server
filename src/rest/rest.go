@@ -3,11 +3,14 @@ package rest
 import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"log"
+	"net/http"
 	"neulhan-commerce-server/src/config"
 	"neulhan-commerce-server/src/middleware"
 )
 
 func RunAPI(address string) error {
+	log.Println("RUN API...")
 	h, err := NewHandler(config.DSN, &gorm.Config{})
 	if err != nil {
 		return err
@@ -18,6 +21,10 @@ func RunAPI(address string) error {
 func RunAPIWithHandler(address string, h HandlerInterface) error {
 	r := gin.Default()
 	r.Use(middleware.CustomMiddleWare())
+
+	r.GET("", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"server": "ON AIR!"})
+	})
 
 	r.GET("/products", h.GetProducts)
 	r.GET("/promos", h.GetPromos)
