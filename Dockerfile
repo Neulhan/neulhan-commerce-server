@@ -8,7 +8,7 @@ ENV GO111MODULE=on \
 
 WORKDIR /build
 
-COPY go.mod go.sum main.go ./
+COPY go.mod go.sum main.go prd.env ./
 
 COPY src ./src
 
@@ -26,7 +26,7 @@ ENV GIN_MODE=release
 
 COPY --from=builder /dist/main .
 
-COPY prd.env .
+COPY --from=builder /build/prd.env .
 
 EXPOSE 8081
 
