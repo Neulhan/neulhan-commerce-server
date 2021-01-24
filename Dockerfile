@@ -1,17 +1,33 @@
-FROM golang
+FROM golang:alpine AS builder
 
-WORKDIR /app
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64 \
+    TZ=Asia/Seoul
 
-COPY go.mod go.sum main.go prd.env ./
+WORKDIR /build
+
+COPY go.mod go.sum main.go ./
 
 COPY src ./src
 
 RUN go mod download
 
-RUN go build -o main
+RUN go build -o main .
+
+WORKDIR /dist
+
+RUN cp /build/main .
+
+FROM scratch
 
 ENV GIN_MODE=release
 
+COPY --from=builder /dist/main .
+
+COPY prd.env .
+
 EXPOSE 8081
 
-CMD ["./main"]
+ENTRYPOINT ["/main"]
