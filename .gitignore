@@ -1,4 +1,5 @@
 neulhan-commerce-server
+venv
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,pycharm,go
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,pycharm,go
@@ -55,7 +56,8 @@ pgadmin/
 Network Trash Folder
 Temporary Items
 .apdisk
-.env
+*.env
+tmp
 ### PyCharm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
@@ -160,3 +162,7 @@ fabric.properties
 .idea/codestream.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,pycharm,go
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
