@@ -1,0 +1,41 @@
+version: '3'
+services:
+  goserverdev:
+    build:
+      context: ./
+      dockerfile: dev.Dockerfile
+    container_name: go_server_dev
+    depends_on:
+      - postgresql
+    env_file: dev.env
+    links:
+      - "postgresql:postgresql-server"
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./:/app
+  postgresql:
+    image: postgres:latest
+    container_name: nc_postgres
+    hostname: 'nc_postgresql'
+    restart: always
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data/db-files/
+    ports:
+      - 5432:5432
+    env_file: dev.env
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pg_admin
+    links:
+      - "postgresql:postgresql-server"
+    env_file: dev.env
+    ports:
+      - '5555:80'
+    volumes:
+      - ./pgadmin/data:/var/lib/pgadmin
+
+volumes:
+  postgres:
+  pgadmin:
+  goserverdev:
