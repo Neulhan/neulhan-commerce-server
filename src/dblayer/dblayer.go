@@ -3,7 +3,9 @@ package dblayer
 import "neulhan-commerce-server/src/models"
 
 type DBLayer interface {
-	GetAllProducts() ([]models.Product, error)
+	GetProducts() ([]models.Product, error)
+	CreateProduct(models.Product) (models.Product, error)
+	UpdateProduct(models.Product) (models.Product, error)
 	GetPromos() ([]models.Product, error)
 	GetCustomerByName(string) (models.Customer, error)
 	GetCustomerByID(int) (models.Customer, error)
