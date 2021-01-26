@@ -2,10 +2,11 @@
 ![](static/ONAIR.png)
 elastic-beanstalk docker postgresql golang gorm gin
 
-- set Blue-Green deploy
+- set Rolling deploy
 - set Logging Middleware
 - set SSL https connection
 - create unit test
+- set Validator for each model
 
 ## Run Project Development
 ```bash
