@@ -37,13 +37,53 @@ func (h *Handler) GetProducts(c iris.Context) {
 		return
 	}
 
-	products, err := h.db.GetAllProducts()
+	products, err := h.db.GetProducts()
 
 	if err != nil {
 		c.StopWithError(iris.StatusInternalServerError, err)
 	}
 
 	c.JSON(products)
+}
+
+func (h *Handler) CreateProduct(c iris.Context) {
+	if h.db == nil {
+		return
+	}
+
+	var product models.Product
+	err := c.ReadJSON(&product)
+	if err != nil {
+		c.StopWithError(iris.StatusBadRequest, err)
+		return
+	}
+
+	product, err = h.db.CreateProduct(product)
+	if err != nil {
+		c.StopWithError(iris.StatusInternalServerError, err)
+	}
+
+	c.JSON(product)
+}
+
+func (h *Handler) UpdateProduct(c iris.Context) {
+	if h.db == nil {
+		return
+	}
+
+	var product models.Product
+	err := c.ReadJSON(&product)
+	if err != nil {
+		c.StopWithError(iris.StatusBadRequest, err)
+		return
+	}
+
+	product, err = h.db.UpdateProduct(product)
+	if err != nil {
+		c.StopWithError(iris.StatusInternalServerError, err)
+	}
+
+	c.JSON(product)
 }
 
 func (h *Handler) GetPromos(c iris.Context) {
