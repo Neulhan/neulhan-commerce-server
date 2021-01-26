@@ -32,15 +32,15 @@ func RunAPIWithHandler(address string, h HandlerInterface) error {
 	//
 	usersAPI := app.Party("/users")
 	{
-		usersAPI.Post("/users/signin", h.SignIn)
-		usersAPI.Post("/users", h.AddUser)
-		usersAPI.Post("/users/charge", h.Charge)
+		usersAPI.Post("/signin", h.SignIn)
+		usersAPI.Post("/", h.AddUser)
+		usersAPI.Post("/charge", h.Charge)
 	}
 	//
 	userAPI := app.Party("/user")
 	{
-		userAPI.Get("/user/:id/orders", h.GetOrders)
-		userAPI.Post("/user/:id/signout", h.SignOut)
+		userAPI.Get("/:id/orders", h.GetOrders)
+		userAPI.Post("/:id/signout", h.SignOut)
 	}
 
 	return app.Listen(address)
