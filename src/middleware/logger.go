@@ -1,11 +1,11 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/kataras/iris/v12"
 )
 
-func CustomMiddleWare() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func CustomMiddleWare() iris.Handler {
+	return func(c iris.Context) {
 		// 요청 전 실행
 		//fmt.Println("----------------")
 		// 요청 실행

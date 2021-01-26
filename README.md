@@ -5,6 +5,7 @@ elastic-beanstalk docker postgresql golang gorm gin
 - set Blue-Green deploy
 - set Logging Middleware
 - set SSL https connection
+- create unit test
 
 ## Run Project Development
 ```bash

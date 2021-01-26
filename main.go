@@ -8,6 +8,6 @@ import (
 )
 
 func main() {
-	log.Printf("[%s] START SERVER ON %s", os.Getenv("GIN_MODE"), config.GetEnv("PORT"))
+	log.Printf("[%s] START SERVER ON %s", os.Getenv("MODE"), config.GetEnv("PORT"))
 	log.Fatal(rest.RunAPI(config.GetEnv("PORT")))
 }

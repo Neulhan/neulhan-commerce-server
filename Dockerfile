@@ -22,7 +22,7 @@ RUN cp /build/main .
 
 FROM scratch
 
-ENV GIN_MODE=release
+ENV MODE=release
 
 COPY --from=builder /dist/main .
 

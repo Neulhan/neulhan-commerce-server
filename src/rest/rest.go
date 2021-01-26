@@ -1,10 +1,10 @@
 package rest
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/middleware/recover"
 	"gorm.io/gorm"
 	"log"
-	"net/http"
 	"neulhan-commerce-server/src/config"
 	"neulhan-commerce-server/src/middleware"
 )
@@ -19,28 +19,29 @@ func RunAPI(address string) error {
 }
 
 func RunAPIWithHandler(address string, h HandlerInterface) error {
-	r := gin.Default()
-	r.Use(middleware.CustomMiddleWare())
+	app := iris.Default()
+	app.UseRouter(recover.New())
+	app.Use(middleware.CustomMiddleWare())
 
-	r.GET("", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"server": "ON AIR!"})
+	app.Get("/", func(c iris.Context) {
+		c.JSON(iris.Map{"server": "ON AIR!"})
 	})
 
-	r.GET("/products", h.GetProducts)
-	r.GET("/promos", h.GetPromos)
-
-	r.Group("/users")
+	app.Get("/products", h.GetProducts)
+	app.Get("/promos", h.GetPromos)
+	//
+	usersAPI := app.Party("/users")
 	{
-		r.POST("/users/signin", h.SignIn)
-		r.POST("/users", h.AddUser)
-		r.POST("/users/charge", h.Charge)
+		usersAPI.Post("/users/signin", h.SignIn)
+		usersAPI.Post("/users", h.AddUser)
+		usersAPI.Post("/users/charge", h.Charge)
+	}
+	//
+	userAPI := app.Party("/user")
+	{
+		userAPI.Get("/user/:id/orders", h.GetOrders)
+		userAPI.Post("/user/:id/signout", h.SignOut)
 	}
 
-	r.Group("/user")
-	{
-		r.GET("/user/:id/orders", h.GetOrders)
-		r.POST("/user/:id/signout", h.SignOut)
-	}
-
-	return r.Run(address)
+	return app.Listen(address)
 }

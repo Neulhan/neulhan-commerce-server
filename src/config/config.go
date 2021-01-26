@@ -7,12 +7,11 @@ import (
 )
 
 func GetEnv(key string) string {
-	if os.Getenv("GIN_MODE") == "release" {
+	if os.Getenv("MODE") == "release" {
 		viper.SetConfigFile("prd.env")
 	} else {
 		viper.SetConfigFile("dev.env")
 	}
-
 	err := viper.ReadInConfig()
 
 	if err != nil {

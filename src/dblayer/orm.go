@@ -22,7 +22,7 @@ func NewORM(dbName string, con *gorm.Config) (*DBORM, error) {
 		db, err = gorm.Open(postgres.Open(dbName), con)
 		if err != nil {
 			fmt.Println(dbName)
-			fmt.Printf("FAILED -> RECONNECT TO DATABASE[%s]", os.Getenv("GIN_MODE"))
+			fmt.Printf("FAILED -> RECONNECT TO DATABASE[%s]", os.Getenv("MODE"))
 
 			time.Sleep(time.Second * 3)
 			continue

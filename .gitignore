@@ -4,6 +4,7 @@ venv
 # Created by https://www.toptal.com/developers/gitignore/api/macos,pycharm,go
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,pycharm,go
 
+*.log
 ### Go ###
 # Binaries for programs and plugins
 *.exe

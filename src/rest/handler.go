@@ -1,22 +1,21 @@
 package rest
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
-	"net/http"
 	"neulhan-commerce-server/src/dblayer"
 	"neulhan-commerce-server/src/models"
 	"strconv"
 )
 
 type HandlerInterface interface {
-	GetProducts(c *gin.Context)
-	GetPromos(c *gin.Context)
-	AddUser(c *gin.Context)
-	SignIn(c *gin.Context)
-	SignOut(c *gin.Context)
-	GetOrders(c *gin.Context)
-	Charge(c *gin.Context)
+	GetProducts(c iris.Context)
+	GetPromos(c iris.Context)
+	AddUser(c iris.Context)
+	SignIn(c iris.Context)
+	SignOut(c iris.Context)
+	GetOrders(c iris.Context)
+	Charge(c iris.Context)
 }
 
 type Handler struct {
@@ -33,7 +32,7 @@ func NewHandler(dbName string, conf *gorm.Config) (*Handler, error) {
 	}, nil
 }
 
-func (h *Handler) GetProducts(c *gin.Context) {
+func (h *Handler) GetProducts(c iris.Context) {
 	if h.db == nil {
 		return
 	}
@@ -41,13 +40,13 @@ func (h *Handler) GetProducts(c *gin.Context) {
 	products, err := h.db.GetAllProducts()
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.StopWithError(iris.StatusInternalServerError, err)
 	}
 
-	c.JSON(http.StatusOK, products)
+	c.JSON(products)
 }
 
-func (h *Handler) GetPromos(c *gin.Context) {
+func (h *Handler) GetPromos(c iris.Context) {
 	if h.db == nil {
 		return
 	}
@@ -55,95 +54,96 @@ func (h *Handler) GetPromos(c *gin.Context) {
 	promos, err := h.db.GetPromos()
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.StopWithError(iris.StatusInternalServerError, err)
+		return
 	}
 
-	c.JSON(http.StatusOK, promos)
+	c.JSON(promos)
 }
 
-func (h *Handler) SignIn(c *gin.Context) {
+func (h *Handler) SignIn(c iris.Context) {
 	if h.db == nil {
 		return
 	}
 
 	var customer models.Customer
 
-	err := c.ShouldBind(&customer)
+	err := c.ReadJSON(&customer)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.StopWithError(iris.StatusBadRequest, err)
 		return
 	}
 
 	customer, err = h.db.SignInUser(customer.Email, customer.Pass)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.StopWithError(iris.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, customer)
+	c.JSON(customer)
 }
 
-func (h *Handler) AddUser(c *gin.Context) {
+func (h *Handler) AddUser(c iris.Context) {
 	if h.db == nil {
 		return
 	}
 
 	var customer models.Customer
 
-	err := c.ShouldBind(&customer)
+	err := c.ReadJSON(&customer)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.StopWithError(iris.StatusBadRequest, err)
 		return
 	}
 
 	customer, err = h.db.AddUser(customer)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.StopWithError(iris.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, customer)
+	c.JSON(customer)
 }
 
-func (h *Handler) SignOut(c *gin.Context) {
+func (h *Handler) SignOut(c iris.Context) {
 	if h.db == nil {
 		return
 	}
-	p := c.Param("id")
+	p := c.Params().Get("id")
 
 	id, err := strconv.Atoi(p)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.StopWithError(iris.StatusBadRequest, err)
 		return
 	}
 	err = h.db.SignOutUserByID(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.StopWithError(iris.StatusInternalServerError, err)
 		return
 	}
 }
 
-func (h *Handler) GetOrders(c *gin.Context) {
+func (h *Handler) GetOrders(c iris.Context) {
 	if h.db == nil {
 		return
 	}
-	p := c.Param("id")
+	p := c.Params().Get("id")
 
 	id, err := strconv.Atoi(p)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.StopWithError(iris.StatusBadRequest, err)
 		return
 	}
 
 	orders, err := h.db.GetCustomerOrdersByID(id)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.StopWithError(iris.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, orders)
+	c.JSON(orders)
 }
 
-func (h *Handler) Charge(c *gin.Context) {
+func (h *Handler) Charge(c iris.Context) {
 	if h.db == nil {
 		return
 	}
