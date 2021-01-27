@@ -3,6 +3,7 @@ package rest
 import (
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
+	"log"
 	"neulhan-commerce-server/src/dblayer"
 	"neulhan-commerce-server/src/models"
 	"strconv"
@@ -10,6 +11,9 @@ import (
 
 type HandlerInterface interface {
 	GetProducts(c iris.Context)
+	GetProduct(c iris.Context)
+	CreateProduct(c iris.Context)
+	UpdateProduct(c iris.Context)
 	GetPromos(c iris.Context)
 	AddUser(c iris.Context)
 	SignIn(c iris.Context)
@@ -46,6 +50,23 @@ func (h *Handler) GetProducts(c iris.Context) {
 	c.JSON(products)
 }
 
+func (h *Handler) GetProduct(c iris.Context) {
+	if h.db == nil {
+		return
+	}
+	id, err := c.Params().GetInt("id")
+	if err != nil {
+		c.StopWithError(iris.StatusBadRequest, err)
+		return
+	}
+	product, err := h.db.GetProduct(id)
+	if err != nil {
+		c.StopWithError(iris.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(product)
+}
+
 func (h *Handler) CreateProduct(c iris.Context) {
 	if h.db == nil {
 		return
@@ -74,6 +95,7 @@ func (h *Handler) UpdateProduct(c iris.Context) {
 	var product models.Product
 	err := c.ReadJSON(&product)
 	if err != nil {
+		log.Println("ERROR?")
 		c.StopWithError(iris.StatusBadRequest, err)
 		return
 	}

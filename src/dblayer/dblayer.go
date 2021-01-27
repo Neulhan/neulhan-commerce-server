@@ -4,6 +4,7 @@ import "neulhan-commerce-server/src/models"
 
 type DBLayer interface {
 	GetProducts() ([]models.Product, error)
+	GetProduct(id int) (models.Product, error)
 	CreateProduct(models.Product) (models.Product, error)
 	UpdateProduct(models.Product) (models.Product, error)
 	GetPromos() ([]models.Product, error)

@@ -27,16 +27,21 @@ func RunAPIWithHandler(address string, h HandlerInterface) error {
 		c.JSON(iris.Map{"server": "ON AIR!"})
 	})
 
-	app.Get("/products", h.GetProducts)
-	app.Get("/promos", h.GetPromos)
-	//
+	productAPI := app.Party("/products")
+	{
+		productAPI.Get("/", h.GetProducts)
+		productAPI.Get("/{id:int}", h.GetProduct)
+		productAPI.Get("/promos", h.GetPromos)
+		productAPI.Post("/", h.CreateProduct)
+		productAPI.Post("/update", h.UpdateProduct)
+	}
+
 	usersAPI := app.Party("/users")
 	{
 		usersAPI.Post("/signin", h.SignIn)
 		usersAPI.Post("/", h.AddUser)
 		usersAPI.Post("/charge", h.Charge)
 	}
-	//
 	userAPI := app.Party("/user")
 	{
 		userAPI.Get("/:id/orders", h.GetOrders)
