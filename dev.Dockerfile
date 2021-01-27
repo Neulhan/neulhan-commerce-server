@@ -8,4 +8,4 @@ RUN go mod download
 
 RUN go get -u github.com/cosmtrek/air
 
-ENTRYPOINT air
+ENTRYPOINT fresh
