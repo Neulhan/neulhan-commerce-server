@@ -31,9 +31,10 @@ func RunAPIWithHandler(address string, h HandlerInterface) error {
 	productAPI := app.Party("/products")
 	{
 		productAPI.Get("/", h.GetProducts)
+		productAPI.Post("/", h.CreateProduct)
+		productAPI.Delete("/", h.DeleteProduct)
 		productAPI.Get("/{id:int}", h.GetProduct)
 		productAPI.Get("/promos", h.GetPromos)
-		productAPI.Post("/", h.CreateProduct)
 		productAPI.Post("/update", h.UpdateProduct)
 	}
 

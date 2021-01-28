@@ -14,6 +14,7 @@ type HandlerInterface interface {
 	GetProduct(c iris.Context)
 	CreateProduct(c iris.Context)
 	UpdateProduct(c iris.Context)
+	DeleteProduct(c iris.Context)
 	GetPromos(c iris.Context)
 	AddUser(c iris.Context)
 	SignIn(c iris.Context)
@@ -106,6 +107,25 @@ func (h *Handler) UpdateProduct(c iris.Context) {
 	}
 
 	c.JSON(product)
+}
+
+func (h *Handler) DeleteProduct(c iris.Context) {
+	if h.db == nil {
+		return
+	}
+	var product models.Product
+	err := c.ReadJSON(&product)
+	if err != nil {
+		c.StopWithError(iris.StatusBadRequest, err)
+		return
+	}
+
+	err = h.db.DeleteProduct(product)
+	if err != nil {
+		c.StopWithError(iris.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(iris.Map{"status": "success"})
 }
 
 func (h *Handler) GetPromos(c iris.Context) {
