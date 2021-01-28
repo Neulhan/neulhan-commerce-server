@@ -7,10 +7,11 @@ type DBLayer interface {
 	GetProduct(id int) (models.Product, error)
 	CreateProduct(models.Product) (models.Product, error)
 	UpdateProduct(models.Product) (models.Product, error)
+	DeleteProduct(models.Product) error
+	GetProductByID(uint) (models.Product, error)
 	GetPromos() ([]models.Product, error)
 	GetCustomerByName(string) (models.Customer, error)
 	GetCustomerByID(int) (models.Customer, error)
-	GetProductByID(uint) (models.Product, error)
 	AddUser(models.Customer) (models.Customer, error)
 	SignInUser(email, pass string) (models.Customer, error)
 	SignOutUserByID(int) error
