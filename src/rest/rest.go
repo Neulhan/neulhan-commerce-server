@@ -21,7 +21,8 @@ func RunAPI(address string) error {
 func RunAPIWithHandler(address string, h HandlerInterface) error {
 	app := iris.Default()
 	app.UseRouter(recover.New())
-	app.Use(middleware.CustomMiddleWare())
+	app.Use(middleware.Logger())
+	app.UseRouter(middleware.Cors)
 
 	app.Get("/", func(c iris.Context) {
 		c.JSON(iris.Map{"server": "ON AIR!"})
