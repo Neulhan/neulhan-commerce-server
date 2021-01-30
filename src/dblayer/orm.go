@@ -26,7 +26,7 @@ func NewORM(dbName string, con *gorm.Config) (*DBORM, error) {
 			time.Sleep(time.Second * 3)
 			continue
 		}
-		err = db.AutoMigrate(&models.Customer{}, &models.Product{}, &models.Order{})
+		err = db.AutoMigrate(&models.User{}, &models.Product{}, &models.Order{})
 		if err != nil {
 			log.Fatal("DATABASE MIGRATE FAILED")
 		}

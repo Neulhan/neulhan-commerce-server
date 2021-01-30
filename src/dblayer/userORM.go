@@ -6,44 +6,44 @@ import (
 	"neulhan-commerce-server/src/models"
 )
 
-func (db *DBORM) GetCustomerByName(name string) (customer models.Customer, err error) {
-	return customer, db.Where(&models.Customer{Name: name}).Find(customer).Error
+func (db *DBORM) GetUserByName(name string) (user models.User, err error) {
+	return user, db.Where(&models.User{Name: name}).Find(user).Error
 }
 
-func (db *DBORM) GetCustomerByID(id int) (customer models.Customer, err error) {
-	return customer, db.First(customer, id).Error
+func (db *DBORM) GetUserByID(id int) (user models.User, err error) {
+	return user, db.First(user, id).Error
 }
 
-func (db *DBORM) AddUser(customer models.Customer) (models.Customer, error) {
-	hashPassword(&customer.Pass)
-	customer.LoggedIn = true
-	return customer, db.Create(&customer).Error
+func (db *DBORM) AddUser(user models.User) (models.User, error) {
+	hashPassword(&user.Pass)
+	user.LoggedIn = true
+	return user, db.Create(&user).Error
 }
 
-func (db *DBORM) SignInUser(email, pass string) (customer models.Customer, err error) {
+func (db *DBORM) SignInUser(email, pass string) (user models.User, err error) {
 	if !checkPassword(pass) {
-		return customer, errors.New("InvalidPassword")
+		return user, errors.New("InvalidPassword")
 	}
-	result := db.Table("Customer").Where(&models.Customer{Email: email})
+	result := db.Table("User").Where(&models.User{Email: email})
 
 	err = result.Update("logged_in", 1).Error
 	if err != nil {
-		return customer, err
+		return user, err
 	}
-	return customer, result.Find(&customer).Error
+	return user, result.Find(&user).Error
 }
 
 func (db *DBORM) SignOutUserByID(id int) error {
-	customer := models.Customer{
+	user := models.User{
 		Model: gorm.Model{
 			ID: uint(id),
 		},
 	}
-	return db.Table("Customer").Where(&customer).Update("logged_id", 0).Error
+	return db.Table("User").Where(&user).Update("logged_id", 0).Error
 }
 
-func (db *DBORM) GetCustomerOrdersByID(id int) (orders []models.Order, err error) {
-	return orders, db.Table("Order").Select("*").Joins("join customer on customer.id = customer_id").Joins("join products on products.id = product_id").Where("customer_id=?", id).Scan(&orders).Error
+func (db *DBORM) GetUserOrdersByID(id int) (orders []models.Order, err error) {
+	return orders, db.Table("Order").Select("*").Joins("join user on user.id = user_id").Joins("join products on products.id = product_id").Where("user_id=?", id).Scan(&orders).Error
 }
 
 func checkPassword(pass string) (check bool) {

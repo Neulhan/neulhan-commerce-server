@@ -16,7 +16,7 @@ services:
       - ./:/app
   postgresql:
     image: postgres:latest
-    container_name: nc_postgres
+    container_name: nc_postgresql
     hostname: 'nc_postgresql'
     restart: always
     volumes:

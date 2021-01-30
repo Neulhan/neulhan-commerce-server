@@ -10,10 +10,10 @@ type DBLayer interface {
 	DeleteProduct(models.Product) error
 	GetProductByID(uint) (models.Product, error)
 	GetPromos() ([]models.Product, error)
-	GetCustomerByName(string) (models.Customer, error)
-	GetCustomerByID(int) (models.Customer, error)
-	AddUser(models.Customer) (models.Customer, error)
-	SignInUser(email, pass string) (models.Customer, error)
+	GetUserByName(string) (models.User, error)
+	GetUserByID(int) (models.User, error)
+	AddUser(models.User) (models.User, error)
+	SignInUser(email, pass string) (models.User, error)
 	SignOutUserByID(int) error
-	GetCustomerOrdersByID(int) ([]models.Order, error)
+	GetUserOrdersByID(int) ([]models.Order, error)
 }

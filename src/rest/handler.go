@@ -148,20 +148,20 @@ func (h *Handler) SignIn(c iris.Context) {
 		return
 	}
 
-	var customer models.Customer
+	var user models.User
 
-	err := c.ReadJSON(&customer)
+	err := c.ReadJSON(&user)
 	if err != nil {
 		c.StopWithError(iris.StatusBadRequest, err)
 		return
 	}
 
-	customer, err = h.db.SignInUser(customer.Email, customer.Pass)
+	user, err = h.db.SignInUser(user.Email, user.Pass)
 	if err != nil {
 		c.StopWithError(iris.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(customer)
+	c.JSON(user)
 }
 
 func (h *Handler) AddUser(c iris.Context) {
@@ -169,20 +169,20 @@ func (h *Handler) AddUser(c iris.Context) {
 		return
 	}
 
-	var customer models.Customer
+	var user models.User
 
-	err := c.ReadJSON(&customer)
+	err := c.ReadJSON(&user)
 	if err != nil {
 		c.StopWithError(iris.StatusBadRequest, err)
 		return
 	}
 
-	customer, err = h.db.AddUser(customer)
+	user, err = h.db.AddUser(user)
 	if err != nil {
 		c.StopWithError(iris.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(customer)
+	c.JSON(user)
 }
 
 func (h *Handler) SignOut(c iris.Context) {
@@ -215,7 +215,7 @@ func (h *Handler) GetOrders(c iris.Context) {
 		return
 	}
 
-	orders, err := h.db.GetCustomerOrdersByID(id)
+	orders, err := h.db.GetUserOrdersByID(id)
 
 	if err != nil {
 		c.StopWithError(iris.StatusInternalServerError, err)

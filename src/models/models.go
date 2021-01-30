@@ -19,7 +19,7 @@ func (Product) TableName() string {
 	return "products"
 }
 
-type Customer struct {
+type User struct {
 	gorm.Model
 	Name     string  `json:"name" gorm:"column: name"`
 	Email    string  `json:"email" gorm:"column:email"`
@@ -28,15 +28,15 @@ type Customer struct {
 	Orders   []Order `json:"orders"`
 }
 
-func (Customer) TableName() string {
-	return "customers"
+func (User) TableName() string {
+	return "users"
 }
 
 type Order struct {
 	gorm.Model
 	Product
-	Customer
-	CustomerID   int       `json:"customerID" gorm:"column:customer_id"`
+	User
+	UserID       int       `json:"userID" gorm:"column:user_id"`
 	ProductID    int       `json:"productID" gorm:"column:product_id"`
 	Price        float64   `json:"sellPrice" gorm:"column:price"`
 	PurchaseDate time.Time `json:"purchaseDate" gorm:"column:purchase_date"`
@@ -45,3 +45,11 @@ type Order struct {
 func (Order) TableName() string {
 	return "orders"
 }
+
+type Session struct {
+	gorm.Model
+	UserID int `json:"userID" gorm:"column:user_id"`
+}
+
+//func (s *Session) GetUser() User {
+//}
