@@ -38,9 +38,14 @@ func RunAPIWithHandler(address string, h HandlerInterface) error {
 		productAPI.Post("/update", h.UpdateProduct)
 	}
 
+	authAPI := app.Party("/auth")
+	{
+		authAPI.Post("/kakao", h.KakaoLogin)
+		authAPI.Post("/github", h.GithubLogin)
+	}
+
 	usersAPI := app.Party("/users")
 	{
-		usersAPI.Post("/signin", h.SignIn)
 		usersAPI.Post("/", h.AddUser)
 		usersAPI.Post("/charge", h.Charge)
 	}
