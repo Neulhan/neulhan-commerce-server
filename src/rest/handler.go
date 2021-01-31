@@ -4,6 +4,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 	"log"
+	"neulhan-commerce-server/src/auth"
 	"neulhan-commerce-server/src/dblayer"
 	"neulhan-commerce-server/src/models"
 	"strconv"
@@ -17,7 +18,8 @@ type HandlerInterface interface {
 	DeleteProduct(c iris.Context)
 	GetPromos(c iris.Context)
 	AddUser(c iris.Context)
-	SignIn(c iris.Context)
+	KakaoLogin(c iris.Context)
+	GithubLogin(c iris.Context)
 	SignOut(c iris.Context)
 	GetOrders(c iris.Context)
 	Charge(c iris.Context)
@@ -143,25 +145,23 @@ func (h *Handler) GetPromos(c iris.Context) {
 	c.JSON(promos)
 }
 
-func (h *Handler) SignIn(c iris.Context) {
+func (h *Handler) KakaoLogin(c iris.Context) {
 	if h.db == nil {
 		return
 	}
 
-	var user models.User
-
-	err := c.ReadJSON(&user)
+	err := auth.KakaoAuth(c)
 	if err != nil {
 		c.StopWithError(iris.StatusBadRequest, err)
+	}
+	c.JSON(iris.Map{"HELLO": "WORLD"})
+}
+
+func (h *Handler) GithubLogin(c iris.Context) {
+	if h.db == nil {
 		return
 	}
 
-	user, err = h.db.SignInUser(user.Email, user.Pass)
-	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
-		return
-	}
-	c.JSON(user)
 }
 
 func (h *Handler) AddUser(c iris.Context) {
