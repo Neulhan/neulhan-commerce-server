@@ -115,14 +115,13 @@ func (h *Handler) DeleteProduct(c iris.Context) {
 	if h.db == nil {
 		return
 	}
-	var product models.Product
-	err := c.ReadJSON(&product)
+	id, err := c.Params().GetInt("id")
 	if err != nil {
 		c.StopWithError(iris.StatusBadRequest, err)
 		return
 	}
 
-	err = h.db.DeleteProduct(product)
+	err = h.db.DeleteProduct(id)
 	if err != nil {
 		c.StopWithError(iris.StatusInternalServerError, err)
 		return

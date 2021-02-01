@@ -20,8 +20,8 @@ func (db *DBORM) UpdateProduct(updateProduct models.Product) (product models.Pro
 	return updateProduct, db.First(&product, updateProduct.ID).Updates(updateProduct).Error
 }
 
-func (db *DBORM) DeleteProduct(productToDelete models.Product) error {
-	return db.Delete(&productToDelete).Error
+func (db *DBORM) DeleteProduct(id int) error {
+	return db.Delete(&models.Product{}, id).Error
 }
 
 func (db *DBORM) GetPromos() (products []models.Product, err error) {
