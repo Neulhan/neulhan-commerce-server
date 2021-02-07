@@ -22,6 +22,7 @@ type HandlerInterface interface {
 	GithubLogin(c iris.Context)
 	SignOut(c iris.Context)
 	GetUsers(c iris.Context)
+	GetUserInfo(c iris.Context)
 	GetOrders(c iris.Context)
 	Charge(c iris.Context)
 }
@@ -191,9 +192,16 @@ func (h *Handler) SignOut(c iris.Context) {
 	}
 	p := c.Params().Get("id")
 
-	id, err := strconv.Atoi(p)
+func (h *Handler) GetUserInfo(ctx iris.Context) {
+	var user models.User
+	userID, err := ctx.Values().GetInt("UserID")
 	if err != nil {
-		c.StopWithError(iris.StatusBadRequest, err)
+		ctx.StopWithError(iris.StatusBadRequest, err)
+	}
+	user, err = h.db.GetUserByID(userID)
+	ctx.JSON(user)
+}
+
 func (h *Handler) GetUsers(c iris.Context) {
 	if h.db == nil {
 		return

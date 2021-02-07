@@ -52,6 +52,7 @@ func RunAPIWithHandler(address string, h HandlerInterface) error {
 	}
 	userAPI := app.Party("/user")
 	{
+		userAPI.Get("/", h.GetUserInfo)
 		userAPI.Get("/:id/orders", h.GetOrders)
 		userAPI.Post("/:id/signout", h.SignOut)
 	}
