@@ -23,7 +23,8 @@ type User struct {
 	gorm.Model
 	Name     string  `json:"name" gorm:"column: name"`
 	Email    string  `json:"email" gorm:"column:email"`
-	Pass     string  `json:"password"`
+	SocialID string  `json:"socialID"`
+	Social   string  `json:"social"`
 	LoggedIn bool    `json:"loggedIn" gorm:"column:logged_in"`
 	Orders   []Order `json:"orders"`
 }

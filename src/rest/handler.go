@@ -148,40 +148,72 @@ func (h *Handler) KakaoLogin(c iris.Context) {
 	if h.db == nil {
 		return
 	}
+	var user models.User
 
-	err := auth.KakaoAuth(c)
+	err := c.ReadJSON(&user)
 	if err != nil {
 		c.StopWithError(iris.StatusBadRequest, err)
 	}
-	c.JSON(iris.Map{"HELLO": "WORLD"})
+	foundUser, err := h.db.GetUserBySocialID(user.SocialID)
+	if err != nil {
+		c.StopWithError(iris.StatusInternalServerError, err)
+		return
+	}
+	var accessUser models.User
+	if foundUser.ID == 0 {
+		accessUser, err = h.db.AddUser(user)
+		if err != nil {
+			c.StopWithError(iris.StatusInternalServerError, err)
+		}
+	} else {
+		accessUser = foundUser
+	}
+	token, err := jwt.CreateToken(int(accessUser.ID))
+	if err != nil {
+		c.StopWithError(iris.StatusInternalServerError, err)
+	}
+	c.SetCookieKV("accessToken", token, iris.CookieHTTPOnly(false))
+	c.JSON(iris.Map{
+		"result": "success",
+	})
+}
+
+type GithubLoginData struct {
+	Code string `json:"code"`
 }
 
 func (h *Handler) GithubLogin(c iris.Context) {
 	if h.db == nil {
 		return
 	}
-
+	var data GithubLoginData
+	err := c.ReadJSON(&data)
+	if err != nil {
+		c.StopWithError(iris.StatusBadRequest, err)
+	}
+	//resp, err := http.Get("https://api.github.com/user")
+	//if err != nil {
+	//	c.StopWithError(iris.StatusInternalServerError, err)
+	//}
+	c.JSON(iris.Map{"HELLO": data.Code})
 }
 
-func (h *Handler) AddUser(c iris.Context) {
+func (h *Handler) SignOut(c iris.Context) {
 	if h.db == nil {
 		return
 	}
+	p := c.Params().Get("id")
 
-	var user models.User
-
-	err := c.ReadJSON(&user)
+	id, err := strconv.Atoi(p)
 	if err != nil {
 		c.StopWithError(iris.StatusBadRequest, err)
 		return
 	}
-
-	user, err = h.db.AddUser(user)
+	err = h.db.SignOutUserByID(id)
 	if err != nil {
 		c.StopWithError(iris.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(user)
 }
 
 func (h *Handler) QuitUser(c iris.Context) {

@@ -12,9 +12,10 @@ type DBLayer interface {
 	GetPromos() ([]models.Product, error)
 	GetUserByName(string) (models.User, error)
 	GetUserByID(int) (models.User, error)
+	GetUserBySocialID(string) (models.User, error)
 	GetUsers() ([]models.User, error)
 	AddUser(models.User) (models.User, error)
-	SignInUser(email, pass string) (models.User, error)
+	SignInUser(socialID string) (models.User, error)
 	SignOutUserByID(int) error
 	DeleteUserByID(int) error
 	GetUserOrdersByID(int) ([]models.Order, error)
