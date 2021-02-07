@@ -42,6 +42,10 @@ func (db *DBORM) SignOutUserByID(id int) error {
 	return db.Table("User").Where(&user).Update("logged_id", 0).Error
 }
 
+func (db *DBORM) GetUsers() (users []models.User, err error) {
+	return users, db.Find(&users).Error
+}
+
 func (db *DBORM) GetUserOrdersByID(id int) (orders []models.Order, err error) {
 	return orders, db.Table("Order").Select("*").Joins("join user on user.id = user_id").Joins("join products on products.id = product_id").Where("user_id=?", id).Scan(&orders).Error
 }

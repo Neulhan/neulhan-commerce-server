@@ -21,6 +21,7 @@ type HandlerInterface interface {
 	KakaoLogin(c iris.Context)
 	GithubLogin(c iris.Context)
 	SignOut(c iris.Context)
+	GetUsers(c iris.Context)
 	GetOrders(c iris.Context)
 	Charge(c iris.Context)
 }
@@ -193,13 +194,15 @@ func (h *Handler) SignOut(c iris.Context) {
 	id, err := strconv.Atoi(p)
 	if err != nil {
 		c.StopWithError(iris.StatusBadRequest, err)
+func (h *Handler) GetUsers(c iris.Context) {
+	if h.db == nil {
 		return
 	}
-	err = h.db.SignOutUserByID(id)
+	users, err := h.db.GetUsers()
 	if err != nil {
 		c.StopWithError(iris.StatusInternalServerError, err)
-		return
 	}
+	c.JSON(users)
 }
 
 func (h *Handler) GetOrders(c iris.Context) {
