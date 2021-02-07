@@ -28,6 +28,6 @@ COPY --from=builder /dist/main .
 
 COPY prd.env .
 
-EXPOSE 8081
+EXPOSE 9091
 
 ENTRYPOINT ["/main"]
