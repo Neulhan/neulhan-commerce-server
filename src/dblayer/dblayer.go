@@ -16,5 +16,6 @@ type DBLayer interface {
 	AddUser(models.User) (models.User, error)
 	SignInUser(email, pass string) (models.User, error)
 	SignOutUserByID(int) error
+	DeleteUserByID(int) error
 	GetUserOrdersByID(int) ([]models.Order, error)
 }

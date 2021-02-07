@@ -3,9 +3,8 @@ package rest
 import (
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
-	"log"
-	"neulhan-commerce-server/src/auth"
 	"neulhan-commerce-server/src/dblayer"
+	"neulhan-commerce-server/src/jwt"
 	"neulhan-commerce-server/src/models"
 	"strconv"
 )
@@ -17,10 +16,10 @@ type HandlerInterface interface {
 	UpdateProduct(c iris.Context)
 	DeleteProduct(c iris.Context)
 	GetPromos(c iris.Context)
-	AddUser(c iris.Context)
 	KakaoLogin(c iris.Context)
 	GithubLogin(c iris.Context)
 	SignOut(c iris.Context)
+	QuitUser(c iris.Context)
 	GetUsers(c iris.Context)
 	GetUserInfo(c iris.Context)
 	GetOrders(c iris.Context)
@@ -100,7 +99,6 @@ func (h *Handler) UpdateProduct(c iris.Context) {
 	var product models.Product
 	err := c.ReadJSON(&product)
 	if err != nil {
-		log.Println("ERROR?")
 		c.StopWithError(iris.StatusBadRequest, err)
 		return
 	}
@@ -186,11 +184,21 @@ func (h *Handler) AddUser(c iris.Context) {
 	c.JSON(user)
 }
 
-func (h *Handler) SignOut(c iris.Context) {
+func (h *Handler) QuitUser(c iris.Context) {
 	if h.db == nil {
 		return
 	}
-	p := c.Params().Get("id")
+	userID, err := c.Values().GetInt("UserID")
+	if err != nil {
+		c.StopWithError(iris.StatusInternalServerError, err)
+	}
+	err = h.db.DeleteUserByID(userID)
+	if err != nil {
+		c.StopWithError(iris.StatusInternalServerError, err)
+	}
+	c.RemoveCookie("accessToken")
+	c.JSON(userID)
+}
 
 func (h *Handler) GetUserInfo(ctx iris.Context) {
 	var user models.User

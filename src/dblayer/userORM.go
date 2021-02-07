@@ -42,6 +42,11 @@ func (db *DBORM) SignOutUserByID(id int) error {
 	return db.Table("User").Where(&user).Update("logged_id", 0).Error
 }
 
+func (db *DBORM) DeleteUserByID(id int) error {
+	log.Println("ID?: ", id)
+	return db.Delete(&models.User{}, id).Error
+}
+
 func (db *DBORM) GetUsers() (users []models.User, err error) {
 	return users, db.Find(&users).Error
 }
