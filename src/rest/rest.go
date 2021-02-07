@@ -22,6 +22,7 @@ func RunAPIWithHandler(address string, h HandlerInterface) error {
 	app := iris.Default()
 	app.UseRouter(recover.New())
 	app.Use(middleware.Logger())
+	app.Use(middleware.UserMiddleware())
 	app.UseRouter(middleware.Cors)
 
 	app.Get("/", func(c iris.Context) {
