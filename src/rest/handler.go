@@ -1,29 +1,31 @@
 package rest
 
 import (
-	"github.com/kataras/iris/v12"
+	"errors"
+	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	"neulhan-commerce-server/src/dblayer"
 	"neulhan-commerce-server/src/jwt"
 	"neulhan-commerce-server/src/models"
 	"strconv"
+	"time"
 )
 
 type HandlerInterface interface {
-	GetProducts(c iris.Context)
-	GetProduct(c iris.Context)
-	CreateProduct(c iris.Context)
-	UpdateProduct(c iris.Context)
-	DeleteProduct(c iris.Context)
-	GetPromos(c iris.Context)
-	KakaoLogin(c iris.Context)
-	GithubLogin(c iris.Context)
-	SignOut(c iris.Context)
-	QuitUser(c iris.Context)
-	GetUsers(c iris.Context)
-	GetUserInfo(c iris.Context)
-	GetOrders(c iris.Context)
-	Charge(c iris.Context)
+	GetProducts(c *fiber.Ctx) error
+	GetProduct(c *fiber.Ctx) error
+	CreateProduct(c *fiber.Ctx) error
+	UpdateProduct(c *fiber.Ctx) error
+	DeleteProduct(c *fiber.Ctx) error
+	GetPromos(c *fiber.Ctx) error
+	KakaoLogin(c *fiber.Ctx) error
+	GithubLogin(c *fiber.Ctx) error
+	SignOut(c *fiber.Ctx) error
+	QuitUser(c *fiber.Ctx) error
+	GetUsers(c *fiber.Ctx) error
+	GetUserInfo(c *fiber.Ctx) error
+	GetOrders(c *fiber.Ctx) error
+	Charge(c *fiber.Ctx) error
 }
 
 type Handler struct {
@@ -40,140 +42,138 @@ func NewHandler(dbName string, conf *gorm.Config) (*Handler, error) {
 	}, nil
 }
 
-func (h *Handler) GetProducts(c iris.Context) {
+func (h *Handler) GetProducts(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
 
 	products, err := h.db.GetProducts()
 
 	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
+		return c.Status(400).JSON(err)
 	}
 
-	c.JSON(products)
+	return c.JSON(products)
 }
 
-func (h *Handler) GetProduct(c iris.Context) {
+func (h *Handler) GetProduct(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
-	id, err := c.Params().GetInt("id")
+	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
-		c.StopWithError(iris.StatusBadRequest, err)
-		return
+		return err
 	}
 	product, err := h.db.GetProduct(id)
 	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
-		return
+		return err
 	}
-	c.JSON(product)
+	return c.JSON(product)
 }
 
-func (h *Handler) CreateProduct(c iris.Context) {
+func (h *Handler) CreateProduct(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
 
 	var product models.Product
-	err := c.ReadJSON(&product)
-	if err != nil {
-		c.StopWithError(iris.StatusBadRequest, err)
-		return
+
+	if err := c.BodyParser(&product); err != nil {
+		return err
 	}
 
-	product, err = h.db.CreateProduct(product)
-	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
+	if _, err := h.db.CreateProduct(product); err != nil {
+		return err
 	}
 
-	c.JSON(product)
+	return c.JSON(product)
 }
 
-func (h *Handler) UpdateProduct(c iris.Context) {
+func (h *Handler) UpdateProduct(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
 
 	var product models.Product
-	err := c.ReadJSON(&product)
-	if err != nil {
-		c.StopWithError(iris.StatusBadRequest, err)
-		return
+
+	if err := c.BodyParser(&product); err != nil {
+		return err
 	}
 
-	product, err = h.db.UpdateProduct(product)
-	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
+	if _, err := h.db.UpdateProduct(product); err != nil {
+		return err
 	}
 
-	c.JSON(product)
+	return c.JSON(product)
 }
 
-func (h *Handler) DeleteProduct(c iris.Context) {
+func (h *Handler) DeleteProduct(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
-	id, err := c.Params().GetInt("id")
+	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
-		c.StopWithError(iris.StatusBadRequest, err)
-		return
+		return err
 	}
 
 	err = h.db.DeleteProduct(id)
 	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
-		return
+		return err
 	}
-	c.JSON(iris.Map{"status": "success"})
+	return c.JSON(fiber.Map{"status": "success"})
 }
 
-func (h *Handler) GetPromos(c iris.Context) {
+func (h *Handler) GetPromos(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
 
 	promos, err := h.db.GetPromos()
 
 	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
-		return
+		return err
 	}
 
-	c.JSON(promos)
+	return c.JSON(promos)
 }
 
-func (h *Handler) KakaoLogin(c iris.Context) {
+func (h *Handler) KakaoLogin(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
 	var user models.User
 
-	err := c.ReadJSON(&user)
-	if err != nil {
-		c.StopWithError(iris.StatusBadRequest, err)
+	if err := c.BodyParser(&user); err != nil {
+		return err
 	}
+
 	foundUser, err := h.db.GetUserBySocialID(user.SocialID)
 	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
-		return
+		return err
 	}
+
 	var accessUser models.User
 	if foundUser.ID == 0 {
 		accessUser, err = h.db.AddUser(user)
 		if err != nil {
-			c.StopWithError(iris.StatusInternalServerError, err)
+			return err
 		}
 	} else {
 		accessUser = foundUser
 	}
 	token, err := jwt.CreateToken(int(accessUser.ID))
 	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
+		return err
 	}
-	c.SetCookieKV("accessToken", token, iris.CookieHTTPOnly(false))
-	c.JSON(iris.Map{
+
+	cookie := new(fiber.Cookie)
+	cookie.Name = "accessToken"
+	cookie.Value = token
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.HTTPOnly = false
+	c.Cookie(cookie)
+
+	return c.JSON(fiber.Map{
 		"result": "success",
 	})
 }
@@ -182,101 +182,96 @@ type GithubLoginData struct {
 	Code string `json:"code"`
 }
 
-func (h *Handler) GithubLogin(c iris.Context) {
+func (h *Handler) GithubLogin(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
 	var data GithubLoginData
-	err := c.ReadJSON(&data)
-	if err != nil {
-		c.StopWithError(iris.StatusBadRequest, err)
-	}
+	//err := c.ReadJSON(&data)
+	//if err != nil {
+	//	return err
+	//}
 	//resp, err := http.Get("https://api.github.com/user")
 	//if err != nil {
-	//	c.StopWithError(iris.StatusInternalServerError, err)
 	//}
-	c.JSON(iris.Map{"HELLO": data.Code})
+	return c.JSON(fiber.Map{"HELLO": data.Code})
 }
 
-func (h *Handler) SignOut(c iris.Context) {
+func (h *Handler) SignOut(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
-	p := c.Params().Get("id")
+	p := c.Params("id")
 
 	id, err := strconv.Atoi(p)
 	if err != nil {
-		c.StopWithError(iris.StatusBadRequest, err)
-		return
+		return err
 	}
 	err = h.db.SignOutUserByID(id)
 	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
-		return
+		return err
 	}
+	return nil
 }
 
-func (h *Handler) QuitUser(c iris.Context) {
+func (h *Handler) QuitUser(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
-	userID, err := c.Values().GetInt("UserID")
-	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
+	userID := c.Locals("UserID").(int)
+
+	if err := h.db.DeleteUserByID(userID); err != nil {
+		return err
 	}
-	err = h.db.DeleteUserByID(userID)
-	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
-	}
-	c.RemoveCookie("accessToken")
-	c.JSON(userID)
+	c.ClearCookie("accessToken")
+	return c.JSON(userID)
 }
 
-func (h *Handler) GetUserInfo(ctx iris.Context) {
+func (h *Handler) GetUserInfo(ctx *fiber.Ctx) error {
 	var user models.User
-	userID, err := ctx.Values().GetInt("UserID")
-	if err != nil {
-		ctx.StopWithError(iris.StatusBadRequest, err)
+	userID := ctx.Locals("UserID").(int)
+
+	if _, err := h.db.GetUserByID(userID); err != nil {
+		return err
 	}
-	user, err = h.db.GetUserByID(userID)
-	ctx.JSON(user)
+
+	return ctx.JSON(user)
 }
 
-func (h *Handler) GetUsers(c iris.Context) {
+func (h *Handler) GetUsers(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
 	users, err := h.db.GetUsers()
 	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
+		return err
 	}
-	c.JSON(users)
+	return c.JSON(users)
 }
 
-func (h *Handler) GetOrders(c iris.Context) {
+func (h *Handler) GetOrders(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
-	p := c.Params().Get("id")
+	p := c.Params("id")
 
 	id, err := strconv.Atoi(p)
 	if err != nil {
-		c.StopWithError(iris.StatusBadRequest, err)
-		return
+		return err
 	}
 
 	orders, err := h.db.GetUserOrdersByID(id)
 
 	if err != nil {
-		c.StopWithError(iris.StatusInternalServerError, err)
-		return
+		return err
 	}
 
-	c.JSON(orders)
+	return c.JSON(orders)
 }
 
-func (h *Handler) Charge(c iris.Context) {
+func (h *Handler) Charge(c *fiber.Ctx) error {
 	if h.db == nil {
-		return
+		return errors.New("DatabaseNotConnected")
 	}
+	return nil
 }

@@ -1,26 +1,23 @@
 package middleware
 
 import (
-	"github.com/kataras/iris/v12"
-	"log"
+	"github.com/gofiber/fiber/v2"
 	"neulhan-commerce-server/src/jwt"
 )
 
-func UserMiddleware() iris.Handler {
-	return func(c iris.Context) {
-		accessToken := c.GetCookie("accessToken")
-		log.Println(accessToken)
+func NewUserMiddleware() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		accessToken := c.Cookies("accessToken")
 		if accessToken == "" {
-			c.Next()
-			return
+			return c.Next()
 		}
 		var err error
 		claims := &jwt.Claims{}
 		claims, err = jwt.ParseToken(accessToken)
 		if err != nil {
-			c.StopWithError(iris.StatusForbidden, err)
+			return err
 		}
-		c.Values().Set("UserID", claims.UserID)
-		c.Next()
+		c.Locals("UserID", claims.UserID)
+		return c.Next()
 	}
 }

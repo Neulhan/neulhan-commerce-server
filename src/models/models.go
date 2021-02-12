@@ -19,6 +19,16 @@ func (Product) TableName() string {
 	return "products"
 }
 
+type Cart struct {
+	gorm.Model
+	Products []Product `json:"products"`
+	User     User      `json:"user"`
+}
+
+func (Cart) TableName() string {
+	return "carts"
+}
+
 type User struct {
 	gorm.Model
 	Name     string  `json:"name" gorm:"column: name"`

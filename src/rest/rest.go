@@ -1,8 +1,10 @@
 package rest
 
 import (
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/middleware/recover"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"gorm.io/gorm"
 	"log"
 	"neulhan-commerce-server/src/config"
@@ -19,38 +21,43 @@ func RunAPI(address string) error {
 }
 
 func RunAPIWithHandler(address string, h HandlerInterface) error {
-	app := iris.Default()
-	app.UseRouter(recover.New())
-	app.Use(middleware.Logger())
-	app.Use(middleware.UserMiddleware())
-	app.UseRouter(middleware.Cors)
+	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:3000, https://devgood.io",
+		AllowCredentials: true,
+	}))
+	app.Use(recover.New())
+	app.Use(logger.New())
+	app.Use(middleware.NewUserMiddleware())
 
-	app.Get("/", func(c iris.Context) {
-		c.JSON(iris.Map{"server": "ON AIR!"})
+	//app.Use(cors.New())
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{"server": "ON AIR!"})
 	})
 
-	productAPI := app.Party("/products")
+	productAPI := app.Group("/products")
 	{
 		productAPI.Get("/", h.GetProducts)
 		productAPI.Post("/", h.CreateProduct)
-		productAPI.Get("/{id:int}", h.GetProduct)
-		productAPI.Delete("/{id:int}", h.DeleteProduct)
+		productAPI.Get("/:id", h.GetProduct)
+		productAPI.Delete("/:id", h.DeleteProduct)
 		productAPI.Get("/promos", h.GetPromos)
 		productAPI.Post("/update", h.UpdateProduct)
 	}
 
-	authAPI := app.Party("/auth")
+	authAPI := app.Group("/auth")
 	{
 		authAPI.Post("/kakao", h.KakaoLogin)
 		authAPI.Post("/github", h.GithubLogin)
 	}
 
-	usersAPI := app.Party("/users")
+	usersAPI := app.Group("/users")
 	{
 		usersAPI.Get("/", h.GetUsers)
 		usersAPI.Post("/charge", h.Charge)
 	}
-	userAPI := app.Party("/user")
+	userAPI := app.Group("/user")
 	{
 		userAPI.Get("/", h.GetUserInfo)
 		userAPI.Delete("/quit", h.QuitUser)
